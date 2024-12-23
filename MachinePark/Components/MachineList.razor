@@ -1,0 +1,34 @@
+﻿@inject GlobalMachineList GlobalMachineList
+
+<h3>MachineList</h3>
+
+<ul>
+    @foreach (var machine in machines)
+    {
+        <li>
+            <span>@machine.Name</span>
+        </li>
+    }
+</ul>
+
+@code {
+    private List<Machine> machines => GlobalMachineList.machines;
+
+    protected override void OnInitialized()
+    {
+        FetchData();
+        GlobalMachineList.OnChange += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        GlobalMachineList.OnChange -= StateHasChanged;
+    }
+
+    public void FetchData()
+    {
+        GlobalMachineList.Add(new Machine { Id = 1, Name = "1-1", Location = "Stockholm", Edited = DateTime.Now, Status = 1 });
+        GlobalMachineList.Add(new Machine { Id = 2, Name = "2-1", Location = "Uppsala", Edited = DateTime.Now, Status = 0 });
+        GlobalMachineList.Add(new Machine { Id = 3, Name = "1-2", Location = "Stockholm", Edited = DateTime.Now, Status = 1 });
+    }
+}
