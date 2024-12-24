@@ -1,18 +1,54 @@
 ﻿@inject GlobalMachineList GlobalMachineList
 
 <h3>MachineList</h3>
+<button @onclick="() => AddMachine()">A</button>
 
-<ul>
-    @foreach (var machine in machines)
-    {
-        <li>
-            <span>@machine.Name</span>
-        </li>
-    }
-</ul>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Location</th>
+            <th>Edited</th>
+            <th>Status</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var machine in machines)
+        {
+            <tr>
+                <td>@machine.Name</td>
+                <td>@machine.Location</td>
+                <td>@machine.Edited</td>
+                <td>@(machine.Status ? "Online" : "Offline")</td>
+                <td>
+                    <button @onclick="() => StatusToggle(machine)">S</button>
+                    <button @onclick="() => UpdateEdit(machine)">E</button>
+                    <button @onclick="() => RemoveMachine(machine)">R</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
 
 @code {
     private List<Machine> machines => GlobalMachineList.machines;
+
+    private void AddMachine(){
+        GlobalMachineList.Add(new Machine { Id = 1, Name = "1-1", Location = "Stockholm", Edited = DateTime.Today, Status = true });
+    }
+
+    private void RemoveMachine(Machine machine){
+        GlobalMachineList.machines.Remove(machine);
+    }
+
+    private void UpdateEdit(Machine machine){
+        machine.Edited = DateTime.Now;
+    }
+
+    private void StatusToggle(Machine machine){
+        machine.Status = !machine.Status;
+    }
 
     protected override void OnInitialized()
     {
@@ -27,8 +63,11 @@
 
     public void FetchData()
     {
-        GlobalMachineList.Add(new Machine { Id = 1, Name = "1-1", Location = "Stockholm", Edited = DateTime.Now, Status = 1 });
-        GlobalMachineList.Add(new Machine { Id = 2, Name = "2-1", Location = "Uppsala", Edited = DateTime.Now, Status = 0 });
-        GlobalMachineList.Add(new Machine { Id = 3, Name = "1-2", Location = "Stockholm", Edited = DateTime.Now, Status = 1 });
+        if (GlobalMachineList.machines.Count < 1)
+        {
+            GlobalMachineList.Add(new Machine { Id = 1, Name = "1-1", Location = "Stockholm", Edited = DateTime.Today, Status = true });
+            GlobalMachineList.Add(new Machine { Id = 2, Name = "2-1", Location = "Uppsala", Edited = DateTime.Now, Status = false });
+            GlobalMachineList.Add(new Machine { Id = 3, Name = "1-2", Location = "Stockholm", Edited = DateTime.UtcNow, Status = true });
+        }
     }
 }
